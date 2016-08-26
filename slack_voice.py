@@ -198,7 +198,7 @@ def sanitiseTextToSpeach(text):
     
     # replace <@U796899> with 'at first_name'
     text = re.sub('<@(.*?)>', 
-                  (lambda m: replaceAtUserId(m) ), 
+                  (lambda m: replaceAtUserId(m.group(1)) if m else ''), 
                   text
                   )
     
@@ -208,15 +208,12 @@ def sanitiseTextToSpeach(text):
     return text
 # end sanitiseTextToSpeach
 
-def replaceAtUserId(mo):
-    try:
-        id = mo.group(1)
-        userName = getUserNameFromId(id)
-        if userName:
-            atUser = 'at ' + userName
-    except:
-        atUser = ''
-
+def replaceAtUserId(id):
+    atUser = ''
+    userName = getUserNameFromId(id)
+    if userName:
+        atUser = 'at ' + userName
+    
     return atUser 
 # replaceUserId
 
