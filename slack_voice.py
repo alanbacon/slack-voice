@@ -7,7 +7,6 @@ libDir = os.path.join(curDir, 'lib')
 sys.path.append(libDir)
 
 import re
-import StringHandler
 import requests
 import time
 from syscmd import syscall
@@ -198,35 +197,42 @@ def sanitiseTextToSpeach(text):
     #text = re.sub('<@.*?>', '', text)
     
     # replace <@U796899> with 'at first_name'
-    StripAt = StringHandler.StripRegex('<@.*?>')
-    StripAt.Strip(text)
-    # change all the striped groups
-    for g, atRef in enumerate(StripAt.groups):
-        id_mo = re.search('<@(.*?)>', atRef)
-        try:
-            id = id_mo.group(1)
-            if slackVars['members'][id]['profile']['first_name']:
-                userFirstName = slackVars['members'][id]['profile']['first_name']
-            elif slackVars['members'][id]['real_name']:
-                userFirstName = slackVars['members'][id]['real_name']
-            elif slackVars['members'][id]['name']:
-                userFirstName = slackVars['members'][id]['name']
-        except:
-            userFirstName = ''
-            
-        if userFirstName:
-            StripAt._StripRegex__groups[g] = 'at ' + userFirstName
-        else:
-            StripAt._StripRegex__groups[g] = ''
-    # include all the striped groups
-    StripAt.IncludeGroups = [i for i in range(len(StripAt.groups))]
-    text = StripAt.StrippedString
+    text = re.sub('<@(.*?)>', 
+                  (lambda m: replaceAtUserId(m) ), 
+                  text
+                  )
     
     text = re.sub('_', ' ', text)
     text = re.sub('&amp;', ' and ', text)
     text = re.escape(text)
     return text
 # end sanitiseTextToSpeach
+
+def replaceAtUserId(mo):
+    try:
+        id = mo.group(1)
+        userName = getUserNameFromId(id)
+        if userName:
+            atUser = 'at ' + userName
+    except:
+        atUser = ''
+
+    return atUser 
+# replaceUserId
+
+def getUserNameFromId(id):
+    try:
+        if slackVars['members'][id]['profile']['first_name']:
+            userFirstName = slackVars['members'][id]['profile']['first_name']
+        elif slackVars['members'][id]['real_name']:
+            userFirstName = slackVars['members'][id]['real_name']
+        elif slackVars['members'][id]['name']:
+            userFirstName = slackVars['members'][id]['name']
+    except:
+        userFirstName = ''
+
+    return userFirstName
+# end getUserNameFromId
 
 
 slackVars = {}
