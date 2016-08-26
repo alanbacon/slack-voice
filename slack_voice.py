@@ -1,6 +1,11 @@
 #!/usr/local/bin/python3
 
+import os
 import sys
+curDir = os.path.dirname(os.path.realpath(__file__))
+libDir = os.path.join(curDir, 'lib')
+sys.path.append(libDir)
+
 import re
 import StringHandler
 import requests
