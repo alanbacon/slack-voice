@@ -20,6 +20,6 @@ Run the script:
 
 Options include:
 
-    quickDemo       : last 50 messages experiences channel + any new messages
+    quickDemo       : last 50 messages from the experiences channel + any new messages
     wallsHaveEars   : Barbara paranoid that objects are listening to her
     <channel_name>  : new messages from the specified channel name
